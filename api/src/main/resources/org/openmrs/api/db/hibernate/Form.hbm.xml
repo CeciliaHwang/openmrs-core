@@ -38,7 +38,7 @@
 		<property name="published" type="boolean" column="published"
 			length="1" not-null="false" />
 
-		<property name="description" type="java.lang.String" 
+		<property name="description" type="text" 
 			column="description" length="1024" />
 
 		<many-to-one name="encounterType" class="EncounterType">

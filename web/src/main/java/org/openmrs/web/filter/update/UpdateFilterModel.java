@@ -9,14 +9,14 @@
  */
 package org.openmrs.web.filter.update;
 
-import java.util.List;
-
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUpdater.OpenMRSChangeSet;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.filter.StartupFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * The {@link UpdateFilter} uses this model object to hold all properties that are edited by the
@@ -57,11 +57,11 @@ public class UpdateFilterModel {
 		Logger log = LoggerFactory.getLogger(getClass());
 		
 		try {
-			changes = DatabaseUpdater.getUnrunDatabaseChanges();
+			changes = DatabaseUpdater.getShortestListOfUnrunDatabaseChanges();
 			
 			// not sure why this is necessary...
 			if (changes == null && DatabaseUpdater.isLocked()) {
-				changes = DatabaseUpdater.getUnrunDatabaseChanges();
+				changes = DatabaseUpdater.getShortestListOfUnrunDatabaseChanges();
 			}
 		}
 		catch (Exception e) {

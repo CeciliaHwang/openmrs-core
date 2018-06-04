@@ -9,12 +9,19 @@
  */
 package org.openmrs.util;
 
+import liquibase.exception.LockException;
+import org.junit.After;
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import liquibase.exception.LockException;
+import java.util.HashSet;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests methods on the {@link DatabaseUpdater} class. This class expects /metadata/model to be on
@@ -23,6 +30,11 @@ import liquibase.exception.LockException;
 public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 	
 	private static final Logger log = LoggerFactory.getLogger(DatabaseUpdaterTest.class);
+	
+	@After
+	public void tearDown() {
+		DatabaseUpdater.setVersionFinder( new LiquibaseVersionFinder() );
+	}
 	
 	/**
 	 * @throws LockException
@@ -39,5 +51,39 @@ public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 			log.error("Runtime Exception in test for Validation Errors");
 		}
 		// does not run DatabaseUpdater.update() because hsqldb doesn't like single quotes in strings
+	}
+
+	@Test ( expected =  IllegalArgumentException.class )
+	public void shouldRejectNullAsChangelog() throws DatabaseUpdateException, InputRequiredException {
+			DatabaseUpdater.executeChangelog( null, ( DatabaseUpdater.ChangeSetExecutorCallback ) null );
+	}
+
+	@Test ( expected = IllegalStateException.class )
+	public void shouldHandleMissingLiquibaseChangeSetCombinations() {
+		LiquibaseVersionFinder versionFinderMock = mock( LiquibaseVersionFinder.class );
+		when(versionFinderMock.getLiquibaseChangesetCombinations()).thenReturn( new HashSet<>(  ) );
+		
+		DatabaseUpdater.setVersionFinder( versionFinderMock );
+		DatabaseUpdater.getShortestListOfUnrunDatabaseChanges();
+	}
+	
+	@Test
+	public void shouldRejectNullAsChangelogFilenames() {
+		try {
+			DatabaseUpdater.getUnrunDatabaseChanges( null );
+			fail();
+	 	} catch ( RuntimeException re ) {
+			assertTrue( re.getCause() instanceof IllegalArgumentException );	
+		}
+	}
+
+	@Test
+	public void shouldEmptyArrayAsChangelogFilenames() {
+		try {
+			DatabaseUpdater.getUnrunDatabaseChanges( new String[0] );
+			fail();
+		} catch ( RuntimeException re ) {
+			assertTrue( re.getCause() instanceof IllegalArgumentException );
+		}
 	}
 }

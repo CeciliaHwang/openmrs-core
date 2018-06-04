@@ -8,7 +8,7 @@
 
     Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
     graphic logo is a trademark of OpenMRS Inc.
-
+    
 -->
 <databaseChangeLog
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
@@ -754,7 +754,7 @@
             <column name="date_created" type="DATETIME">
                 <constraints nullable="false"/>
             </column>
-            <column name="sort_weight" type="real"/>
+            <column name="sort_weight" type="FLOAT"/>
             <column name="uuid" type="char(38)" />
         </createTable>
         <modifySql dbms="mssql">

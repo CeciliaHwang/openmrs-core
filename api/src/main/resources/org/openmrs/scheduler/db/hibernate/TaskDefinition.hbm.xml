@@ -40,7 +40,7 @@
 				length="1024" />
 		
 		<property name="taskClass" 
-				type="java.lang.String" 
+				type="text" 
 				column="schedulable_class" 
 				length="1024" />
 		
@@ -92,7 +92,7 @@
 				cascade="save-update,merge,evict">
 			<key column="task_config_id" not-null="true" />
 			<map-key column="name" type="java.lang.String" length="100" />
-			<element column="value" type="java.lang.String" length="1024" />
+			<element column="value" type="text" length="1024" />
 		</map>
 
 

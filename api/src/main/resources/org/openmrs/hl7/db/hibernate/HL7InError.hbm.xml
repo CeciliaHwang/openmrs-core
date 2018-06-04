@@ -29,16 +29,16 @@
 			<column name="hl7_source" />
 		</many-to-one>
 		
-		<property name="HL7SourceKey" type="java.lang.String" 
+		<property name="HL7SourceKey" type="text" 
 			column="hl7_source_key" not-null="false" length="1024" />
 			
-		<property name="HL7Data" type="java.lang.String" 
+		<property name="HL7Data" type="text" 
 			column="hl7_data" not-null="true" length="16777215" />
 			
 		<property name="error" type="java.lang.String" length="255"
 			column="error" />
 
-		<property name="errorDetails" type="java.lang.String" length="16777215"
+		<property name="errorDetails" type="text" length="16777215"
 			column="error_details" />
 
 		<property name="dateCreated" type="java.util.Date" 

@@ -9,6 +9,48 @@
  */
 package org.openmrs.web.filter.initialization;
 
+import liquibase.changelog.ChangeSet;
+import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Appender;
+import org.apache.log4j.Logger;
+import org.openmrs.ImplementationId;
+import org.openmrs.api.APIAuthenticationException;
+import org.openmrs.api.PasswordException;
+import org.openmrs.api.context.Context;
+import org.openmrs.api.context.ContextAuthenticationException;
+import org.openmrs.module.MandatoryModuleException;
+import org.openmrs.module.OpenmrsCoreModuleException;
+import org.openmrs.module.web.WebModuleUtil;
+import org.openmrs.util.DatabaseUpdateException;
+import org.openmrs.util.DatabaseUpdater;
+import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
+import org.openmrs.util.DatabaseUtil;
+import org.openmrs.util.InputRequiredException;
+import org.openmrs.util.LiquibaseVersionFinder;
+import org.openmrs.util.MemoryAppender;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.openmrs.util.PrivilegeConstants;
+import org.openmrs.util.Security;
+import org.openmrs.web.Listener;
+import org.openmrs.web.WebConstants;
+import org.openmrs.web.WebDaemon;
+import org.openmrs.web.filter.StartupFilter;
+import org.openmrs.web.filter.update.UpdateFilter;
+import org.openmrs.web.filter.util.CustomResourceLoader;
+import org.openmrs.web.filter.util.ErrorMessageConstants;
+import org.openmrs.web.filter.util.FilterUtil;
+import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
+import org.springframework.web.context.ContextLoader;
+
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -34,49 +76,6 @@ import java.util.Properties;
 import java.util.Random;
 import java.util.zip.ZipInputStream;
 
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.log4j.Appender;
-import org.apache.log4j.Logger;
-import org.openmrs.ImplementationId;
-import org.openmrs.api.APIAuthenticationException;
-import org.openmrs.api.PasswordException;
-import org.openmrs.api.context.Context;
-import org.openmrs.api.context.ContextAuthenticationException;
-import org.openmrs.module.MandatoryModuleException;
-import org.openmrs.module.OpenmrsCoreModuleException;
-import org.openmrs.module.web.WebModuleUtil;
-import org.openmrs.util.DatabaseUpdateException;
-import org.openmrs.util.DatabaseUpdater;
-import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
-import org.openmrs.util.DatabaseUtil;
-import org.openmrs.util.InputRequiredException;
-import org.openmrs.util.MemoryAppender;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-import org.openmrs.util.PrivilegeConstants;
-import org.openmrs.util.Security;
-import org.openmrs.web.Listener;
-import org.openmrs.web.WebConstants;
-import org.openmrs.web.WebDaemon;
-import org.openmrs.web.filter.StartupFilter;
-import org.openmrs.web.filter.update.UpdateFilter;
-import org.openmrs.web.filter.util.CustomResourceLoader;
-import org.openmrs.web.filter.util.ErrorMessageConstants;
-import org.openmrs.web.filter.util.FilterUtil;
-import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
-import org.springframework.web.context.ContextLoader;
-
-import liquibase.changelog.ChangeSet;
-
 /**
  * This is the first filter that is processed. It is only active when starting OpenMRS for the very
  * first time. It will redirect all requests to the {@link WebConstants#SETUP_PAGE_URL} if the
@@ -85,10 +84,6 @@ import liquibase.changelog.ChangeSet;
 public class InitializationFilter extends StartupFilter {
 	
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger(InitializationFilter.class);
-	
-	private static final String LIQUIBASE_SCHEMA_DATA = "liquibase-schema-only.xml";
-	
-	private static final String LIQUIBASE_CORE_DATA = "liquibase-core-data.xml";
 	
 	private static final String LIQUIBASE_DEMO_DATA = "liquibase-demo-data.xml";
 	
@@ -1375,7 +1370,8 @@ public class InitializationFilter extends StartupFilter {
 					try {
 						String connectionUsername;
 						StringBuilder connectionPassword = new StringBuilder();
-						
+						LiquibaseVersionFinder versionFinder = new LiquibaseVersionFinder();
+
 						if (!wizardModel.hasCurrentOpenmrsDatabase) {
 							setMessage("Create database");
 							setExecutingTask(WizardTask.CREATE_SCHEMA);
@@ -1544,17 +1540,26 @@ public class InitializationFilter extends StartupFilter {
 						if (wizardModel.createTables) {
 							// use liquibase to create core data + tables
 							try {
-								setMessage("Executing " + LIQUIBASE_SCHEMA_DATA);
+								String liquibaseSchemaFileName = versionFinder.getLatestLiquibaseSchemaSnapshotFilename().get();
+								String liquibaseCoreDataFileName = versionFinder.getLatestLiquibaseCoreDataSnapshotFilename().get();
+
+								setMessage("Executing " + liquibaseSchemaFileName );
 								setExecutingTask(WizardTask.CREATE_TABLES);
-								DatabaseUpdater.executeChangelog(LIQUIBASE_SCHEMA_DATA, null,
-								    new PrintingChangeSetExecutorCallback("OpenMRS schema file"));
+								
+								DatabaseUpdater.executeChangelog(
+									liquibaseSchemaFileName ,
+								    new PrintingChangeSetExecutorCallback("OpenMRS schema file")
+								);
 								addExecutedTask(WizardTask.CREATE_TABLES);
 								
 								//reset for this task
 								setCompletedPercentage(0);
 								setExecutingTask(WizardTask.ADD_CORE_DATA);
-								DatabaseUpdater.executeChangelog(LIQUIBASE_CORE_DATA, null,
-								    new PrintingChangeSetExecutorCallback("OpenMRS core data file"));
+								
+								DatabaseUpdater.executeChangelog(
+									liquibaseCoreDataFileName,
+								    new PrintingChangeSetExecutorCallback("OpenMRS core data file")
+								);
 								wizardModel.workLog.add("Created database tables and added core data");
 								addExecutedTask(WizardTask.ADD_CORE_DATA);
 								
@@ -1623,8 +1628,11 @@ public class InitializationFilter extends StartupFilter {
 								setMessage("Adding demo data");
 								setCompletedPercentage(0);
 								setExecutingTask(WizardTask.ADD_DEMO_DATA);
-								DatabaseUpdater.executeChangelog(LIQUIBASE_DEMO_DATA, null,
-								    new PrintingChangeSetExecutorCallback("OpenMRS demo patients, users, and forms"));
+
+								DatabaseUpdater.executeChangelog(
+									LIQUIBASE_DEMO_DATA, 
+									new PrintingChangeSetExecutorCallback("OpenMRS demo patients, users, and forms")
+								);
 								wizardModel.workLog.add("Added demo data");
 								
 								addExecutedTask(WizardTask.ADD_DEMO_DATA);
@@ -1641,8 +1649,23 @@ public class InitializationFilter extends StartupFilter {
 							setMessage("Updating the database to the latest version");
 							setCompletedPercentage(0);
 							setExecutingTask(WizardTask.UPDATE_TO_LATEST);
-							DatabaseUpdater.executeChangelog(null, null, new PrintingChangeSetExecutorCallback(
-							        "Updating database tables to latest version "));
+
+							String version = null;
+							
+							if (wizardModel.createTables) {
+								version = versionFinder.getLatestLiquibaseSnapshotVersion().get();
+							} else {
+								version = OpenmrsConstants.OPENMRS_VERSION_SHORT;
+							}
+							
+							List<String> changelogs = versionFinder.getApplicableLiquibaseUpdateFileNames( version );
+
+							for ( String changelog: changelogs ) {
+								DatabaseUpdater.executeChangelog(
+									changelog, 
+									new PrintingChangeSetExecutorCallback( "executing liquibase changelog " + changelog )
+								);
+							}
 							addExecutedTask(WizardTask.UPDATE_TO_LATEST);
 						}
 						catch (Exception e) {

@@ -9,28 +9,7 @@
  */
 package org.openmrs.module;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.rmi.activation.Activator;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.SortedMap;
-import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentHashMap;
-
+import liquibase.Contexts;
 import org.aopalliance.aop.Advice;
 import org.openmrs.GlobalProperty;
 import org.openmrs.Privilege;
@@ -52,6 +31,28 @@ import org.slf4j.LoggerFactory;
 import org.springframework.aop.Advisor;
 import org.springframework.context.support.AbstractRefreshableApplicationContext;
 import org.springframework.util.StringUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.activation.Activator;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+import java.util.SortedMap;
+import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Methods for loading, starting, stopping, and storing OpenMRS modules
@@ -983,7 +984,7 @@ public class ModuleFactory {
 		if (liquibaseFileExists) {
 			try {
 				// run liquibase.xml by Liquibase API
-				DatabaseUpdater.executeChangelog(MODULE_CHANGELOG_FILENAME, null, null, null, getModuleClassLoader(module));
+				DatabaseUpdater.executeChangelog(MODULE_CHANGELOG_FILENAME, new Contexts(), null, getModuleClassLoader(module));
 			}
 			catch (InputRequiredException ire) {
 				// the user would be stepped through the questions returned here.
