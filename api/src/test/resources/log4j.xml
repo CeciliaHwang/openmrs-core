@@ -47,7 +47,11 @@
 	<logger name="org.openmrs.test">
 		<level value="OFF" />
 	</logger>
-	
+
+	<logger name="org.openmrs.util.databasechange.ValidateHibernateMappingsIT">
+		<level value="INFO" />
+	</logger>
+
 	<logger name="org.hibernate.SQL">
 		<level value="OFF" />
 	</logger>

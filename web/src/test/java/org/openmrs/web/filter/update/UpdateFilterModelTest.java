@@ -9,20 +9,6 @@
  */
 package org.openmrs.web.filter.update;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.collection.IsEmptyCollection.empty;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +17,18 @@ import org.openmrs.util.DatabaseUpdater.OpenMRSChangeSet;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.collection.IsEmptyCollection.empty;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.when;
 
 /**
  * Tests {@link UpdateFilterModel}.
@@ -53,7 +51,7 @@ public class UpdateFilterModelTest {
 		OpenMRSChangeSet change = mock(OpenMRSChangeSet.class);
 		List<OpenMRSChangeSet> changes = new ArrayList<>();
 		changes.add(change);
-		when(DatabaseUpdater.getUnrunDatabaseChanges()).thenReturn(changes);
+		when(DatabaseUpdater.getShortestListOfUnrunDatabaseChanges()).thenReturn(changes);
 		when(DatabaseUpdater.isLocked()).thenReturn(false);
 		
 		model = new UpdateFilterModel();
@@ -61,7 +59,7 @@ public class UpdateFilterModelTest {
 		assertTrue("should require an update", model.updateRequired);
 		assertThat(model.changes, is(changes));
 		PowerMockito.verifyStatic();
-		DatabaseUpdater.getUnrunDatabaseChanges();
+		DatabaseUpdater.getShortestListOfUnrunDatabaseChanges();
 		PowerMockito.verifyStatic(never());
 		DatabaseUpdater.updatesRequired();
 	}
@@ -79,7 +77,7 @@ public class UpdateFilterModelTest {
 		assertTrue("should require an update", model.updateRequired);
 		assertThat(model.changes, is(empty()));
 		PowerMockito.verifyStatic();
-		DatabaseUpdater.getUnrunDatabaseChanges();
+		DatabaseUpdater.getShortestListOfUnrunDatabaseChanges();
 		PowerMockito.verifyStatic();
 		DatabaseUpdater.updatesRequired();
 	}
@@ -97,7 +95,7 @@ public class UpdateFilterModelTest {
 		assertFalse("should not require an update", model.updateRequired);
 		assertThat(model.changes, is(empty()));
 		PowerMockito.verifyStatic();
-		DatabaseUpdater.getUnrunDatabaseChanges();
+		DatabaseUpdater.getShortestListOfUnrunDatabaseChanges();
 		PowerMockito.verifyStatic();
 		DatabaseUpdater.updatesRequired();
 	}
@@ -113,9 +111,9 @@ public class UpdateFilterModelTest {
 		model = new UpdateFilterModel();
 		
 		assertFalse("should not require an update", model.updateRequired);
-		assertNull("should not have changes", model.changes);
+		assertTrue("should not have changes", model.changes.isEmpty());
 		PowerMockito.verifyStatic();
-		DatabaseUpdater.getUnrunDatabaseChanges();
+		DatabaseUpdater.getShortestListOfUnrunDatabaseChanges();
 		PowerMockito.verifyStatic();
 		DatabaseUpdater.updatesRequired();
 	}
@@ -131,9 +129,9 @@ public class UpdateFilterModelTest {
 		model = new UpdateFilterModel();
 		
 		assertFalse("should not require an update", model.updateRequired);
-		assertNull("should not have changes", model.changes);
-		PowerMockito.verifyStatic(times(2));
-		DatabaseUpdater.getUnrunDatabaseChanges();
+		assertTrue("should not have changes", model.changes.isEmpty());
+		PowerMockito.verifyStatic();
+		DatabaseUpdater.getShortestListOfUnrunDatabaseChanges();
 		PowerMockito.verifyStatic();
 		DatabaseUpdater.updatesRequired();
 	}
@@ -145,15 +143,15 @@ public class UpdateFilterModelTest {
 		OpenMRSChangeSet change = mock(OpenMRSChangeSet.class);
 		List<OpenMRSChangeSet> changes = new ArrayList<>();
 		changes.add(change);
-		when(DatabaseUpdater.getUnrunDatabaseChanges()).thenReturn(null, changes);
+		when(DatabaseUpdater.getShortestListOfUnrunDatabaseChanges()).thenReturn( changes );
 		when(DatabaseUpdater.isLocked()).thenReturn(true);
 		
 		model = new UpdateFilterModel();
 		
 		assertTrue("should require an update", model.updateRequired);
 		assertThat(model.changes, is(changes));
-		PowerMockito.verifyStatic(times(2));
-		DatabaseUpdater.getUnrunDatabaseChanges();
+		PowerMockito.verifyStatic();
+		DatabaseUpdater.getShortestListOfUnrunDatabaseChanges();
 		PowerMockito.verifyStatic(never());
 		DatabaseUpdater.updatesRequired();
 	}

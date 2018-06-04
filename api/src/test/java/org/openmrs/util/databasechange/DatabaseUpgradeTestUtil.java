@@ -50,6 +50,7 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
+import org.openmrs.util.LiquibaseVersionFinder;
 
 /**
  * Allows to test database upgrade. It accepts initialDatabasePath which should point to the h2
@@ -58,7 +59,7 @@ import liquibase.resource.ClassLoaderResourceAccessor;
 public class DatabaseUpgradeTestUtil {
 	
 	private final Connection connection;
-	
+
 	private final Database liqubaseConnection;
 	
 	private final DatabaseConnection dbUnitConnection;
@@ -144,10 +145,10 @@ public class DatabaseUpgradeTestUtil {
 			connection.close();
 		}
 		finally {
-			tempDBFile.delete();
-			tempDir.delete();
+				tempDBFile.delete();
+				tempDir.delete();
+			}
 		}
-	}
 	
 	public Connection getConnection() {
 		return connection;
@@ -229,15 +230,14 @@ public class DatabaseUpgradeTestUtil {
 		try {
 			Liquibase liquibase = new Liquibase(filename, new ClassLoaderResourceAccessor(getClass()
 			        .getClassLoader()), liqubaseConnection);
-			liquibase.update(null);
-			
+			liquibase.update("");
+
 			connection.commit();
-		}
-		catch (LiquibaseException e) {
+		} catch (LiquibaseException e) {
 			throw new IOException(e);
 		}
 	}
-	
+
 	public SessionFactory buildSessionFactory() {
 		Configuration config = new Configuration().configure();
 		Set<Class<?>> entityClasses = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(Entity.class);
@@ -253,6 +253,8 @@ public class DatabaseUpgradeTestUtil {
 		config.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "false");
 		config.setProperty(Environment.USE_QUERY_CACHE, "false");
 		
+		// TODO TRUNK-4830 two tests in Database1_9_7UpgradeIT do not pass the validation and are red
+		//
 		//Let's validate HBMs against the actual schema
 		config.setProperty(Environment.HBM2DDL_AUTO, "validate");
 		

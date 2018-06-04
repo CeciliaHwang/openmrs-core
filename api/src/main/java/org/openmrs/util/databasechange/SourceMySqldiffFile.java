@@ -9,6 +9,22 @@
  */
 package org.openmrs.util.databasechange;
 
+import liquibase.change.custom.CustomTaskChange;
+import liquibase.database.Database;
+import liquibase.database.DatabaseConnection;
+import liquibase.exception.CustomChangeException;
+import liquibase.exception.DatabaseException;
+import liquibase.exception.SetupException;
+import liquibase.exception.ValidationErrors;
+import liquibase.resource.ResourceAccessor;
+import org.openmrs.api.context.Context;
+import org.openmrs.util.ClassLoaderFileOpener;
+import org.openmrs.util.OpenmrsClassLoader;
+import org.openmrs.util.OpenmrsConstants;
+import org.openmrs.util.OpenmrsUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -23,21 +39,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-
-import org.openmrs.api.context.Context;
-import org.openmrs.util.OpenmrsConstants;
-import org.openmrs.util.OpenmrsUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import liquibase.change.custom.CustomTaskChange;
-import liquibase.database.Database;
-import liquibase.database.DatabaseConnection;
-import liquibase.exception.CustomChangeException;
-import liquibase.exception.DatabaseException;
-import liquibase.exception.SetupException;
-import liquibase.exception.ValidationErrors;
-import liquibase.resource.ResourceAccessor;
+import java.util.Set;
 
 /**
  * Executes (aka "source"s) the given file on the current database. <br>
@@ -90,9 +92,12 @@ public class SourceMySqldiffFile implements CustomTaskChange {
 		File tmpOutputFile = null;
 		try {
 			tmpOutputFile = File.createTempFile(sqlFile, "tmp");
-			InputStream sqlFileInputStream = fileOpener.getResourceAsStream(sqlFile);
+
+			fileOpener = new ClassLoaderFileOpener( OpenmrsClassLoader.getInstance() );
+			Set<InputStream> sqlFileInputStream = fileOpener.getResourcesAsStream( sqlFile );
+			
 			OutputStream outputStream = new FileOutputStream(tmpOutputFile);
-			OpenmrsUtil.copyFile(sqlFileInputStream, outputStream);
+			OpenmrsUtil.copyFile(sqlFileInputStream.iterator().next(), outputStream);
 		}
 		catch (IOException e) {
 			if (tmpOutputFile != null) {

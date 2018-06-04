@@ -8,7 +8,7 @@
 
     Copyright (C) OpenMRS Inc. OpenMRS is a registered trademark and the OpenMRS
     graphic logo is a trademark of OpenMRS Inc.
-
+    
 -->
 <databaseChangeLog
     xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
