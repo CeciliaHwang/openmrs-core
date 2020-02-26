@@ -88,4 +88,9 @@
 		-->
 	</root>
 
+	<!-- TODO TRUNK-4830 remove -->
+	<logger name="org.openmrs.web.filter.initialization">
+		<level value="INFO" />
+	</logger>
+	
 </log4j:configuration>

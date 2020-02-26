@@ -1546,6 +1546,10 @@ public class InitializationFilter extends StartupFilter {
 							try {
 								setMessage("Executing " + LIQUIBASE_SCHEMA_DATA);
 								setExecutingTask(WizardTask.CREATE_TABLES);
+
+								// TODO TRUNK-4830-master
+								log.info( ">>>> applying Liquibase changelog: " + LIQUIBASE_SCHEMA_DATA );
+
 								DatabaseUpdater.executeChangelog(LIQUIBASE_SCHEMA_DATA, null,
 								    new PrintingChangeSetExecutorCallback("OpenMRS schema file"));
 								addExecutedTask(WizardTask.CREATE_TABLES);
@@ -1553,6 +1557,10 @@ public class InitializationFilter extends StartupFilter {
 								//reset for this task
 								setCompletedPercentage(0);
 								setExecutingTask(WizardTask.ADD_CORE_DATA);
+
+								// TODO TRUNK-4830-master
+								log.info( ">>>> applying Liquibase changelog: " + LIQUIBASE_CORE_DATA );
+								
 								DatabaseUpdater.executeChangelog(LIQUIBASE_CORE_DATA, null,
 								    new PrintingChangeSetExecutorCallback("OpenMRS core data file"));
 								wizardModel.workLog.add("Created database tables and added core data");
@@ -1623,6 +1631,10 @@ public class InitializationFilter extends StartupFilter {
 								setMessage("Adding demo data");
 								setCompletedPercentage(0);
 								setExecutingTask(WizardTask.ADD_DEMO_DATA);
+
+								// TODO TRUNK-4830-master
+								log.info( ">>>> applying Liquibase changelog: " + LIQUIBASE_DEMO_DATA );
+
 								DatabaseUpdater.executeChangelog(LIQUIBASE_DEMO_DATA, null,
 								    new PrintingChangeSetExecutorCallback("OpenMRS demo patients, users, and forms"));
 								wizardModel.workLog.add("Added demo data");
@@ -1641,6 +1653,10 @@ public class InitializationFilter extends StartupFilter {
 							setMessage("Updating the database to the latest version");
 							setCompletedPercentage(0);
 							setExecutingTask(WizardTask.UPDATE_TO_LATEST);
+
+							// TODO TRUNK-4830-master
+							log.info( ">>>> updating database tables to latest version" );
+							
 							DatabaseUpdater.executeChangelog(null, null, new PrintingChangeSetExecutorCallback(
 							        "Updating database tables to latest version "));
 							addExecutedTask(WizardTask.UPDATE_TO_LATEST);
