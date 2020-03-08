@@ -19,7 +19,7 @@ import org.openmrs.util.DatabaseUpdateException;
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.util.InputRequiredException;
-import org.openmrs.util.LiquibaseVersionFinder;
+import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.util.MemoryAppender;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -723,14 +723,29 @@ public class UpdateFilter extends StartupFilter {
 						try {
 							setMessage("Updating the database to the latest version");
 
-							LiquibaseVersionFinder versionFinder = new LiquibaseVersionFinder();
+							ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
 
 							List<String> changelogs = new ArrayList<>();
 							List<String> warnings = new ArrayList<>();
 
-							changelogs.addAll( versionFinder.getApplicableLiquibaseUpdateFileNames( OpenmrsConstants.OPENMRS_VERSION_SHORT ) );
+							log.debug( String.format(
+								"getting applicable Liquibase update change logs for OpenMRS version %s", 
+								OpenmrsConstants.OPENMRS_VERSION_SHORT 
+							));
+
+							changelogs.addAll(
+								changeLogVersionFinder.getUpdateFileNames( 
+									changeLogVersionFinder.getUpdateVersionsEqualToOrGreaterThan(
+										OpenmrsConstants.OPENMRS_VERSION_SHORT
+									)	
+								) 
+							);
+
+							log.debug( String.format("found applicable Liquibase update change logs: %s", changelogs ) );
 
 							for ( String changelog : changelogs ) {
+								log.debug( String.format("apply change log to OpenMRS schema: ", changelog ) );
+								
 								List<String> currentWarnings = DatabaseUpdater.executeChangelog(
 									changelog,
 									new PrintingChangeSetExecutorCallback("executing liquibase changelog :" + changelog )
@@ -764,7 +779,7 @@ public class UpdateFilter extends StartupFilter {
 							reportErrors(databaseUpdateErrors);
 							return;
 						}
-						
+
 						setMessage("Starting OpenMRS");
 						try {
 							startOpenmrs(filterConfig.getServletContext());

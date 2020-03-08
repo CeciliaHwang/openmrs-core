@@ -52,6 +52,16 @@
 		<level value="INFO" />
 	</logger>
 
+	<!-- TODO TRUNK-4830 remove -->
+	<logger name="org.openmrs.util">
+		<level value="INFO" />
+	</logger>
+	<logger name="org.openmrs.liquibase">
+		<level value="INFO" />
+	</logger>
+	<logger name="org.openmrs.util.MariaDbTest">
+		<level value="INFO" />
+	</logger>
 	<logger name="org.hibernate.SQL">
 		<level value="OFF" />
 	</logger>

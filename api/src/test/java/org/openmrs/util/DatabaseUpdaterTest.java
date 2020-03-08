@@ -9,14 +9,14 @@
  */
 package org.openmrs.util;
 
+import java.io.IOException;
+import java.util.HashMap;
 import liquibase.exception.LockException;
 import org.junit.After;
 import org.junit.Test;
 import org.openmrs.test.BaseContextSensitiveTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.HashSet;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
@@ -28,26 +28,21 @@ import static org.mockito.Mockito.when;
  * the classpath so that the liquibase-update-to-latest.xml can be found.
  */
 public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
-	
+
 	private static final Logger log = LoggerFactory.getLogger(DatabaseUpdaterTest.class);
-	
-	@After
-	public void tearDown() {
-		DatabaseUpdater.setVersionFinder( new LiquibaseVersionFinder() );
-	}
-	
+
 	/**
 	 * @throws LockException
 	 * @see DatabaseUpdater#updatesRequired()
 	 */
 	@Test
-	public void updatesRequired_shouldAlwaysHaveAValidUpdateToLatestFile() throws LockException {
+	public void updatesRequired_shouldAlwaysHaveAValidUpdateToLatestFile() throws Exception {
 		// expects /metadata/model to be on the classpath so that
 		// the liquibase-update-to-latest.xml can be found.
 		try {
 			DatabaseUpdater.updatesRequired();
 		}
-		catch (RuntimeException rex) {
+		catch ( RuntimeException | IOException rex) {
 			log.error("Runtime Exception in test for Validation Errors");
 		}
 		// does not run DatabaseUpdater.update() because hsqldb doesn't like single quotes in strings
@@ -55,25 +50,16 @@ public class DatabaseUpdaterTest extends BaseContextSensitiveTest {
 
 	@Test ( expected =  IllegalArgumentException.class )
 	public void shouldRejectNullAsChangelog() throws DatabaseUpdateException, InputRequiredException {
-			DatabaseUpdater.executeChangelog( null, ( DatabaseUpdater.ChangeSetExecutorCallback ) null );
+		DatabaseUpdater.executeChangelog( null, ( DatabaseUpdater.ChangeSetExecutorCallback ) null );
 	}
 
-	@Test ( expected = IllegalStateException.class )
-	public void shouldHandleMissingLiquibaseChangeSetCombinations() {
-		LiquibaseVersionFinder versionFinderMock = mock( LiquibaseVersionFinder.class );
-		when(versionFinderMock.getLiquibaseChangesetCombinations()).thenReturn( new HashSet<>(  ) );
-		
-		DatabaseUpdater.setVersionFinder( versionFinderMock );
-		DatabaseUpdater.getShortestListOfUnrunDatabaseChanges();
-	}
-	
 	@Test
 	public void shouldRejectNullAsChangelogFilenames() {
 		try {
-			DatabaseUpdater.getUnrunDatabaseChanges( null );
+			DatabaseUpdater.getUnrunDatabaseChanges( (String[]) null );
 			fail();
-	 	} catch ( RuntimeException re ) {
-			assertTrue( re.getCause() instanceof IllegalArgumentException );	
+		} catch ( RuntimeException re ) {
+			assertTrue( re.getCause() instanceof IllegalArgumentException );
 		}
 	}
 

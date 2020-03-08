@@ -88,4 +88,16 @@
 		-->
 	</root>
 
+	<!-- TODO TRUNK-4830 remove -->
+	<logger name="org.openmrs.liquibase">
+		<level value="DEBUG" />
+	</logger>
+	<logger name="org.openmrs.util">
+		<level value="DEBUG" />
+	</logger>
+	<logger name="org.openmrs.web.filter">
+		<level value="DEBUG" />
+	</logger>
+
+
 </log4j:configuration>

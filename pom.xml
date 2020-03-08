@@ -1051,9 +1051,10 @@
 		<maven.build.timestamp.format>yyyy-MM-dd HH:mm</maven.build.timestamp.format>
 		<TIMESTAMP>${maven.build.timestamp}</TIMESTAMP>
 
-		<openmrs.version.long>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion} ${parsedVersion.qualifier} Build ${revisionNumber}</openmrs.version.long>
-		<openmrs.version.short>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}-${revisionNumber}</openmrs.version.short>
-		<openmrs.version.shortnumericonly>${parsedVersion.majorVersion}.${parsedVersion.minorVersion}.${parsedVersion.incrementalVersion}</openmrs.version.shortnumericonly>
+		<!-- TODO TRUNK-4830 revert change -->
+		<openmrs.version.long>2.4.0 alpha Build 123abc</openmrs.version.long>
+		<openmrs.version.short>2.4.0-123abc</openmrs.version.short>
+		<openmrs.version.shortnumericonly>2.4.0</openmrs.version.shortnumericonly>
 		<openmrs.version>${project.version}</openmrs.version>
 
 		<springVersion>4.1.4.RELEASE</springVersion>
