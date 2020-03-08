@@ -23,10 +23,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
-
-import javax.persistence.Entity;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -39,10 +36,6 @@ import org.dbunit.dataset.ReplacementDataSet;
 import org.dbunit.dataset.xml.FlatXmlDataSet;
 import org.dbunit.ext.h2.H2DataTypeFactory;
 import org.dbunit.operation.DatabaseOperation;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
-import org.hibernate.cfg.Environment;
-import org.openmrs.util.OpenmrsClassScanner;
 
 import liquibase.Liquibase;
 import liquibase.database.Database;
@@ -50,7 +43,6 @@ import liquibase.database.DatabaseFactory;
 import liquibase.database.jvm.JdbcConnection;
 import liquibase.exception.LiquibaseException;
 import liquibase.resource.ClassLoaderResourceAccessor;
-import org.openmrs.util.LiquibaseVersionFinder;
 
 /**
  * Allows to test database upgrade. It accepts initialDatabasePath which should point to the h2
@@ -236,28 +228,5 @@ public class DatabaseUpgradeTestUtil {
 		} catch (LiquibaseException e) {
 			throw new IOException(e);
 		}
-	}
-
-	public SessionFactory buildSessionFactory() {
-		Configuration config = new Configuration().configure();
-		Set<Class<?>> entityClasses = OpenmrsClassScanner.getInstance().getClassesWithAnnotation(Entity.class);
-		for (Class<?> clazz : entityClasses) {
-			config.addAnnotatedClass(clazz);
-		}
-		//H2 version we use behaves differently from H2Dialect in Hibernate so we provide our implementation
-		config.setProperty(Environment.DIALECT, H2LessStrictDialect.class.getName());
-		config.setProperty(Environment.URL, connectionUrl);
-		config.setProperty(Environment.DRIVER, "org.h2.Driver");
-		config.setProperty(Environment.USER, "sa");
-		config.setProperty(Environment.PASS, "sa");
-		config.setProperty(Environment.USE_SECOND_LEVEL_CACHE, "false");
-		config.setProperty(Environment.USE_QUERY_CACHE, "false");
-		
-		// TODO TRUNK-4830 two tests in Database1_9_7UpgradeIT do not pass the validation and are red
-		//
-		//Let's validate HBMs against the actual schema
-		config.setProperty(Environment.HBM2DDL_AUTO, "validate");
-		
-		return config.buildSessionFactory();
 	}
 }

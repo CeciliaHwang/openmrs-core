@@ -26,7 +26,7 @@ import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUpdater.ChangeSetExecutorCallback;
 import org.openmrs.util.DatabaseUtil;
 import org.openmrs.util.InputRequiredException;
-import org.openmrs.util.LiquibaseVersionFinder;
+import org.openmrs.liquibase.ChangeLogVersionFinder;
 import org.openmrs.util.MemoryAppender;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.util.OpenmrsUtil;
@@ -1034,10 +1034,10 @@ public class InitializationFilter extends StartupFilter {
 	}
 	
 	/**
-	 * @see org.openmrs.web.filter.StartupFilter#getModel()
+	 * @see org.openmrs.web.filter.StartupFilter#getUpdateFilterModel()
 	 */
 	@Override
-	protected Object getModel() {
+	protected Object getUpdateFilterModel() {
 		return wizardModel;
 	}
 	
@@ -1370,7 +1370,7 @@ public class InitializationFilter extends StartupFilter {
 					try {
 						String connectionUsername;
 						StringBuilder connectionPassword = new StringBuilder();
-						LiquibaseVersionFinder versionFinder = new LiquibaseVersionFinder();
+						ChangeLogVersionFinder changeLogVersionFinder = new ChangeLogVersionFinder();
 
 						if (!wizardModel.hasCurrentOpenmrsDatabase) {
 							setMessage("Create database");
@@ -1540,12 +1540,14 @@ public class InitializationFilter extends StartupFilter {
 						if (wizardModel.createTables) {
 							// use liquibase to create core data + tables
 							try {
-								String liquibaseSchemaFileName = versionFinder.getLatestLiquibaseSchemaSnapshotFilename().get();
-								String liquibaseCoreDataFileName = versionFinder.getLatestLiquibaseCoreDataSnapshotFilename().get();
+								String liquibaseSchemaFileName = changeLogVersionFinder.getLatestSchemaSnapshotFilename().get();
+								String liquibaseCoreDataFileName = changeLogVersionFinder.getLatestCoreDataSnapshotFilename().get();
 
 								setMessage("Executing " + liquibaseSchemaFileName );
 								setExecutingTask(WizardTask.CREATE_TABLES);
-								
+
+								log.debug( String.format("executing Liquibase file '%s' ", liquibaseSchemaFileName ) );
+
 								DatabaseUpdater.executeChangelog(
 									liquibaseSchemaFileName ,
 								    new PrintingChangeSetExecutorCallback("OpenMRS schema file")
@@ -1555,7 +1557,9 @@ public class InitializationFilter extends StartupFilter {
 								//reset for this task
 								setCompletedPercentage(0);
 								setExecutingTask(WizardTask.ADD_CORE_DATA);
-								
+
+								log.debug( String.format("executing Liquibase file '%s' ", liquibaseCoreDataFileName ) );
+
 								DatabaseUpdater.executeChangelog(
 									liquibaseCoreDataFileName,
 								    new PrintingChangeSetExecutorCallback("OpenMRS core data file")
@@ -1629,6 +1633,8 @@ public class InitializationFilter extends StartupFilter {
 								setCompletedPercentage(0);
 								setExecutingTask(WizardTask.ADD_DEMO_DATA);
 
+									log.debug( String.format("executing Liquibase file '%s' ", LIQUIBASE_DEMO_DATA ) );
+
 								DatabaseUpdater.executeChangelog(
 									LIQUIBASE_DEMO_DATA, 
 									new PrintingChangeSetExecutorCallback("OpenMRS demo patients, users, and forms")
@@ -1653,14 +1659,24 @@ public class InitializationFilter extends StartupFilter {
 							String version = null;
 							
 							if (wizardModel.createTables) {
-								version = versionFinder.getLatestLiquibaseSnapshotVersion().get();
+								version = changeLogVersionFinder.getLatestSnapshotVersion().get();
 							} else {
 								version = OpenmrsConstants.OPENMRS_VERSION_SHORT;
 							}
+
+							log.debug( "updating OpenMRS database to latest version" );
 							
-							List<String> changelogs = versionFinder.getApplicableLiquibaseUpdateFileNames( version );
+							// TODO TRUNK-4830 equal or greater than or just greater than?
+							//
+							// based on the original snapshot version, greater than should be sufficient
+							//
+							List<String> changelogs = changeLogVersionFinder.getUpdateFileNames(
+								changeLogVersionFinder.getUpdateVersionsEqualToOrGreaterThan( version )
+							);
 
 							for ( String changelog: changelogs ) {
+								log.debug( String.format("applying Liquibase changelog '%s'", changelog ) );
+
 								DatabaseUpdater.executeChangelog(
 									changelog, 
 									new PrintingChangeSetExecutorCallback( "executing liquibase changelog " + changelog )

@@ -15,15 +15,13 @@
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
 	xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog-ext 
-	    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+    	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
 		http://www.liquibase.org/xml/ns/dbchangelog 
-		http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+    	http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
 
-	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-1.9.x.xml"/>
-	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.0.x.xml"/>
-	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.1.x.xml"/>
-	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.2.x.xml"/>
-	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.3.x.xml"/>
-	<include file="org/openmrs/liquibase/updates/liquibase-update-to-latest-2.4.x.xml"/>
+	<!-- 
+		This changelog is empty on purpose. Liquibase snapshots were introduced starting with OpenMRS version 1.9.x 
+		and this (empty) file is the counterpart of the Liquibase snapshot files version 1.9.x.  
+	-->
 
 </databaseChangeLog>

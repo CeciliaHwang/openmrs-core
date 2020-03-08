@@ -11,6 +11,8 @@ package org.openmrs.web.filter.update;
 
 import org.openmrs.util.DatabaseUpdater;
 import org.openmrs.util.DatabaseUpdater.OpenMRSChangeSet;
+import org.openmrs.liquibase.LiquibaseProvider;
+import org.openmrs.util.DatabaseUpdaterLiquibaseProvider;
 import org.openmrs.util.OpenmrsConstants;
 import org.openmrs.web.filter.StartupFilter;
 import org.slf4j.Logger;
@@ -18,6 +20,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+// TODO TRUNK-4830 understand how the UpdateFilter and the UpdateFilterModel interact.
+//
 /**
  * The {@link UpdateFilter} uses this model object to hold all properties that are edited by the
  * user in the wizard. All attributes on this model object are added to all templates rendered by
@@ -31,12 +35,25 @@ public class UpdateFilterModel {
 	
 	public Boolean updateRequired = false;
 	
+	private LiquibaseProvider liquibaseProvider;
+	
 	/**
 	 * Default constructor that sets up some of the properties
 	 */
 	public UpdateFilterModel() {
-		updateChanges();
+		this( new DatabaseUpdaterLiquibaseProvider() );
+	}
+
+	/**
+	 * Constructor that allows to inject a Liquibase provider.
+	 * 
+	 * @param liquibaseProvider a Liquibase provider
+	 */
+	public UpdateFilterModel( LiquibaseProvider liquibaseProvider ) {
+		this.liquibaseProvider = liquibaseProvider;
 		
+		updateChanges();
+
 		try {
 			if (changes != null && !changes.isEmpty()) {
 				updateRequired = true;
@@ -57,11 +74,11 @@ public class UpdateFilterModel {
 		Logger log = LoggerFactory.getLogger(getClass());
 		
 		try {
-			changes = DatabaseUpdater.getShortestListOfUnrunDatabaseChanges();
+			changes = DatabaseUpdater.getUnrunDatabaseChanges( liquibaseProvider );
 			
 			// not sure why this is necessary...
 			if (changes == null && DatabaseUpdater.isLocked()) {
-				changes = DatabaseUpdater.getShortestListOfUnrunDatabaseChanges();
+				changes = DatabaseUpdater.getUnrunDatabaseChanges( liquibaseProvider );
 			}
 		}
 		catch (Exception e) {
