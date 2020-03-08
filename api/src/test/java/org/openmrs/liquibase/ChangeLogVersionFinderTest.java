@@ -24,16 +24,16 @@ import static org.mockito.Mockito.when;
 
 public class ChangeLogVersionFinderTest {
 	
-	private static final String LIQUIBASE_SNAPSHOTS_1_9_X_LIQUIBASE_SCHEMA_ONLY_XML = "liquibase-snapshots/1.9.x/liquibase-schema-only.xml";
-	private static final String LIQUIBASE_SNAPSHOTS_1_9_X_LIQUIBASE_CORE_DATA_XML = "liquibase-snapshots/1.9.x/liquibase-core-data.xml";
+	private static final String SNAPSHOTS_CORE_DATA_1_9_X_FILENAME = "org/openmrs/liquibase/snapshots/core-data/liquibase-core-data-1.9.x.xml";
+	private static final String SNAPSHOTS_SCHEMA_ONLY_1_9_X_FILENAME = "org/openmrs/liquibase/snapshots/schema-only/liquibase-schema-only-1.9.x.xml";
 
-	private static final String LIQUIBASE_SNAPSHOTS_2_1_X_LIQUIBASE_SCHEMA_ONLY_XML = "liquibase-snapshots/2.1.x/liquibase-schema-only.xml";
-	private static final String LIQUIBASE_SNAPSHOTS_2_1_X_LIQUIBASE_CORE_DATA_XML = "liquibase-snapshots/2.1.x/liquibase-core-data.xml";
+	private static final String SNAPSHOTS_CORE_DATA_2_1_X_FILENAME = "org/openmrs/liquibase/snapshots/core-data/liquibase-core-data-2.1.x.xml";
+	private static final String SNAPSHOTS_SCHEMA_ONLY_2_1_X_FILENAME = "org/openmrs/liquibase/snapshots/schema-only/liquibase-schema-only-2.1.x.xml";
 
-	private static final String LIQUIBASE_UPDATES_1_9_X_LIQUIBASE_UPDATE_TO_LATEST_XML = "liquibase-updates/1.9.x/liquibase-update-to-latest.xml";
-	private static final String LIQUIBASE_UPDATES_2_0_X_LIQUIBASE_UPDATE_TO_LATEST_XML = "liquibase-updates/2.0.x/liquibase-update-to-latest.xml";
-	private static final String LIQUIBASE_UPDATES_2_1_X_LIQUIBASE_UPDATE_TO_LATEST_XML = "liquibase-updates/2.1.x/liquibase-update-to-latest.xml";
-	private static final String LIQUIBASE_UPDATES_2_2_X_LIQUIBASE_UPDATE_TO_LATEST_XML = "liquibase-updates/2.2.x/liquibase-update-to-latest.xml";
+	private static final String UPDATES_LIQUIBASE_UPDATE_TO_LATEST_1_9_X_FILENAME = "org/openmrs/liquibase/updates/liquibase-update-to-latest-1.9.x.xml";
+	private static final String UPDATES_LIQUIBASE_UPDATE_TO_LATEST_2_0_X_FILENAME = "org/openmrs/liquibase/updates/liquibase-update-to-latest-2.0.x.xml";
+	private static final String UPDATES_LIQUIBASE_UPDATE_TO_LATEST_2_1_X_FILENAME = "org/openmrs/liquibase/updates/liquibase-update-to-latest-2.1.x.xml";
+	private static final String UPDATES_LIQUIBASE_UPDATE_TO_LATEST_2_2_X_FILENAME = "org/openmrs/liquibase/updates/liquibase-update-to-latest-2.2.x.xml";
 
 	private static final String NON_EXISTING_VERSION_42_7_X = "42.7.x";
 
@@ -71,17 +71,17 @@ public class ChangeLogVersionFinderTest {
 		Map<String, List<String>> actual = changeLogVersionFinder.getChangeLogCombinations();
 
 		List<String> liquibaseChangeSetsForSnapshot_1_9 = Arrays.asList(
-			LIQUIBASE_SNAPSHOTS_1_9_X_LIQUIBASE_SCHEMA_ONLY_XML,
-			LIQUIBASE_SNAPSHOTS_1_9_X_LIQUIBASE_CORE_DATA_XML,
-			LIQUIBASE_UPDATES_2_0_X_LIQUIBASE_UPDATE_TO_LATEST_XML,
-			LIQUIBASE_UPDATES_2_1_X_LIQUIBASE_UPDATE_TO_LATEST_XML,
-			LIQUIBASE_UPDATES_2_2_X_LIQUIBASE_UPDATE_TO_LATEST_XML
+			SNAPSHOTS_SCHEMA_ONLY_1_9_X_FILENAME,
+			SNAPSHOTS_CORE_DATA_1_9_X_FILENAME,
+			UPDATES_LIQUIBASE_UPDATE_TO_LATEST_2_0_X_FILENAME,
+			UPDATES_LIQUIBASE_UPDATE_TO_LATEST_2_1_X_FILENAME,
+			UPDATES_LIQUIBASE_UPDATE_TO_LATEST_2_2_X_FILENAME
 		);
 
 		List<String> liquibaseChangeSetsForSnapshot_2_1 = Arrays.asList(
-			LIQUIBASE_SNAPSHOTS_2_1_X_LIQUIBASE_SCHEMA_ONLY_XML,
-			LIQUIBASE_SNAPSHOTS_2_1_X_LIQUIBASE_CORE_DATA_XML,
-			LIQUIBASE_UPDATES_2_2_X_LIQUIBASE_UPDATE_TO_LATEST_XML
+			SNAPSHOTS_SCHEMA_ONLY_2_1_X_FILENAME,
+			SNAPSHOTS_CORE_DATA_2_1_X_FILENAME,
+			UPDATES_LIQUIBASE_UPDATE_TO_LATEST_2_2_X_FILENAME
 		);
 
 		Map<String, List<String>>  expected = new HashMap<>();
@@ -96,13 +96,13 @@ public class ChangeLogVersionFinderTest {
 		Map<String, List<String>> actual = changeLogVersionFinder.getSnapshotCombinations();
 
 		List<String> liquibaseChangeSetsForSnapshot_1_9 = Arrays.asList(
-			LIQUIBASE_SNAPSHOTS_1_9_X_LIQUIBASE_SCHEMA_ONLY_XML,
-			LIQUIBASE_SNAPSHOTS_1_9_X_LIQUIBASE_CORE_DATA_XML
+			SNAPSHOTS_SCHEMA_ONLY_1_9_X_FILENAME,
+			SNAPSHOTS_CORE_DATA_1_9_X_FILENAME
 		);
 
 		List<String> liquibaseChangeSetsForSnapshot_2_1 = Arrays.asList(
-			LIQUIBASE_SNAPSHOTS_2_1_X_LIQUIBASE_SCHEMA_ONLY_XML,
-			LIQUIBASE_SNAPSHOTS_2_1_X_LIQUIBASE_CORE_DATA_XML
+			SNAPSHOTS_SCHEMA_ONLY_2_1_X_FILENAME,
+			SNAPSHOTS_CORE_DATA_2_1_X_FILENAME
 		);
 
 		Map<String, List<String>>  expected = new HashMap<>();
@@ -116,8 +116,8 @@ public class ChangeLogVersionFinderTest {
 	public void shouldGetLiquibaseSnapshotFilenames() {
 		List<String> actual = changeLogVersionFinder.getSnapshotFilenames( "1.2.3-one-two-three" );
 		List<String> expected = Arrays.asList(
-			"liquibase-snapshots/1.2.x/liquibase-schema-only.xml",
-			"liquibase-snapshots/1.2.x/liquibase-core-data.xml"
+			"org/openmrs/liquibase/snapshots/schema-only/liquibase-schema-only-1.2.x.xml",
+			"org/openmrs/liquibase/snapshots/core-data/liquibase-core-data-1.2.x.xml"
 		);
 
 		assertEquals( expected, actual );
@@ -133,14 +133,14 @@ public class ChangeLogVersionFinderTest {
 	@Test
 	public void shouldGetLatestLiquibaseSchemaSnapshotFilename() {
 		Optional<String> actual = changeLogVersionFinder.getLatestSchemaSnapshotFilename();
-		Optional<String> expected = Optional.of( LIQUIBASE_SNAPSHOTS_2_1_X_LIQUIBASE_SCHEMA_ONLY_XML );
+		Optional<String> expected = Optional.of( SNAPSHOTS_SCHEMA_ONLY_2_1_X_FILENAME );
 		assertEquals( expected, actual );
 	}
 
 	@Test
 	public void shouldGetLatestLiquibaseCoreDataSnapshotFilename() {
 		Optional<String> actual = changeLogVersionFinder.getLatestCoreDataSnapshotFilename();
-		Optional<String> expected = Optional.of( LIQUIBASE_SNAPSHOTS_2_1_X_LIQUIBASE_CORE_DATA_XML );
+		Optional<String> expected = Optional.of( SNAPSHOTS_CORE_DATA_2_1_X_FILENAME );
 		assertEquals( expected, actual );
 	}
 
@@ -188,9 +188,9 @@ public class ChangeLogVersionFinderTest {
 		);
 		List<String> actual = changeLogVersionFinder.getUpdateFileNames( versions );
 		List<String> expected = Arrays.asList(
-			LIQUIBASE_UPDATES_1_9_X_LIQUIBASE_UPDATE_TO_LATEST_XML,
-			LIQUIBASE_UPDATES_2_0_X_LIQUIBASE_UPDATE_TO_LATEST_XML,
-			LIQUIBASE_UPDATES_2_1_X_LIQUIBASE_UPDATE_TO_LATEST_XML
+			UPDATES_LIQUIBASE_UPDATE_TO_LATEST_1_9_X_FILENAME,
+			UPDATES_LIQUIBASE_UPDATE_TO_LATEST_2_0_X_FILENAME,
+			UPDATES_LIQUIBASE_UPDATE_TO_LATEST_2_1_X_FILENAME
 		);
 		assertEquals( expected, actual );
 	}

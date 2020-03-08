@@ -26,10 +26,13 @@ public class ChangeLogVersions {
 	/*
 	 * TODO TRUNK-4830 refactor folder and file structure for snapshot and update change log files
 	 *  
-	 * - move all files to the resources directory and give up the idea of having subfolders per version ?
-	 * - make version number part of the filename (as opposed to having folders named after the version and using the 
+	 * DONE - move all files to the resources directory and give up the idea of having subfolders per version ?
+	 * DONE - make version number part of the filename (as opposed to having folders named after the version and using the 
 	 *   same file names within these folders)
+	 * 
 	 * - why use the same logical file path for all update files? That made sense for early ones but could be stopped.
+	 *   Easiest to continue.
+	 * 
 	 * - are ids of change sets unique across change log files? extract all ids and check for uniqueness
 	 * - would using the same logical file path for all versions would make life easier? No it would not, it is essential 
 	 *   to prevent that an earlier versions of snapshot and updates are ever run on top of a later snapshot. Is there a 
@@ -37,12 +40,13 @@ public class ChangeLogVersions {
 	 * 
 	 */
 	/**
-	 * This definition of Liquibase snapshot versions needs to be kept in sync with the actual subfolders
-	 * underneath openmrs-core/api/src/main/resources/liquibase-snapshots.
+	 * This definition of Liquibase snapshot versions needs to be kept in sync with the actual change log files
+	 * in openmrs-core/api/src/main/resources/liquibase/snapshots/core-data 
+	 * and openmrs-core/api/src/main/resources/liquibase/snapshots/schema-only.
 	 * 
-	 * If the actual subfolders and the list get out of sync, org.openmrs.liquibase.ChangeLogVersionsTest fails. 
+	 * If the actual change log files and this list get out of sync, org.openmrs.liquibase.ChangeLogVersionsTest fails. 
 	 */
-	private static final List<String> LIQUIBASE_SNAPSHOT_VERSIONS = Arrays.asList(
+	private static final List<String> SNAPSHOT_VERSIONS = Arrays.asList(
 		"1.9.x",
 		"2.1.x",
 		"2.2.x",
@@ -50,12 +54,12 @@ public class ChangeLogVersions {
 	);
 
 	/**
-	 * This definition of Liquibase snapshot versions needs to be kept in sync with the actual subfolders
-	 * underneath openmrs-core/api/src/main/resources/liquibase-updates.
+	 * This definition of Liquibase update versions needs to be kept in sync with the actual change log files
+	 * in openmrs-core/api/src/main/resources/liquibase/updates. 
 	 *
-	 * If the actual subfolders and the list get out of sync, org.openmrs.liquibase.ChangeLogVersionsTest fails. 
+	 * If the actual change log files and this list get out of sync, org.openmrs.liquibase.ChangeLogVersionsTest fails. 
 	 */
-	private static final List<String> LIQUIBASE_UPDATE_VERSIONS = Arrays.asList(
+	private static final List<String> UPDATE_VERSIONS = Arrays.asList(
 		"1.9.x",
 		"2.0.x",
 		"2.1.x",
@@ -65,10 +69,10 @@ public class ChangeLogVersions {
 	);
 
 	public List<String> getSnapshotVersions() {
-		return LIQUIBASE_SNAPSHOT_VERSIONS;
+		return SNAPSHOT_VERSIONS;
 	}
 
 	public List<String> getUpdateVersions() {
-		return LIQUIBASE_UPDATE_VERSIONS;
+		return UPDATE_VERSIONS;
 	}
 }

@@ -3,6 +3,8 @@ This document explains why Liquibase snapshots are introduced to OpenMRS and how
 affected by snapshots. It also contains instructions for creating new Liquibase snapshots, running them from the 
 console and adding them to the OpenMRS code base.
 
+TODO TRUNK-4830 - update README.md to reflect changes in the folder and filename conventions for snapshots and updates
+
 ## Why Liquibase snapshots?
 OpenMRS uses [Liquibase](http://www.liquibase.org/index.html) to evolve its database model. The respective change sets 
 have grown in the course of time and contain unneeded changes. E.g. there are tables or columns that are created, 

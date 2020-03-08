@@ -26,13 +26,15 @@ import org.openmrs.module.VersionComparator;
  */
 public class ChangeLogVersionFinder {
 
-	private static final String SNAPSHOTS_FOLDER_NAME = "liquibase-snapshots";
-	private static final String UPDATES_FOLDER_NAME = "liquibase-updates";
+	private static final String CORE_DATA_FOLDER_NAME = "org/openmrs/liquibase/snapshots/core-data";
+	private static final String SCHEMA_ONLY_FOLDER_NAME = "org/openmrs/liquibase/snapshots/schema-only";
+	private static final String UPDATES_FOLDER_NAME = "org/openmrs/liquibase/updates";
 	
-	private static final String SNAPSHOTS_CORE_DATA_FILENAME = "liquibase-core-data.xml";
-	private static final String SNAPSHOTS_SCHEMA_ONLY_FILENAME = "liquibase-schema-only.xml";
-	private static final String UPDATES_FILENAME = "liquibase-update-to-latest.xml";
+	private static final String CORE_DATA_BASE_NAME = "liquibase-core-data-";
+	private static final String SCHEMA_ONLY_BASE_NAME = "liquibase-schema-only-";
+	private static final String UPDATE_TO_LATEST_BASE_NAME = "liquibase-update-to-latest-";
 
+	private static final String DOT_XML = ".xml";
 	private static final String LOWER_CASE_X = "x";
 
 	private ChangeLogVersions changeLogVersions;
@@ -88,8 +90,8 @@ public class ChangeLogVersionFinder {
 	public List<String> getSnapshotFilenames( String version ) {
 		String versionAsDotX = getVersionAsDotX( version );
 		return Arrays.asList(
-			SNAPSHOTS_FOLDER_NAME + File.separator + versionAsDotX + File.separator + SNAPSHOTS_SCHEMA_ONLY_FILENAME,
-			SNAPSHOTS_FOLDER_NAME + File.separator + versionAsDotX + File.separator + SNAPSHOTS_CORE_DATA_FILENAME
+			SCHEMA_ONLY_FOLDER_NAME + File.separator + SCHEMA_ONLY_BASE_NAME + versionAsDotX + DOT_XML,
+			CORE_DATA_FOLDER_NAME + File.separator + CORE_DATA_BASE_NAME + versionAsDotX + DOT_XML
 		);
 	}
 
@@ -103,7 +105,7 @@ public class ChangeLogVersionFinder {
 		Optional<String> snapshotVersion = getLatestSnapshotVersion();
 		if ( snapshotVersion.isPresent() ) {
 			return Optional.of(
-				SNAPSHOTS_FOLDER_NAME + File.separator + snapshotVersion.get() + File.separator + SNAPSHOTS_SCHEMA_ONLY_FILENAME
+				SCHEMA_ONLY_FOLDER_NAME + File.separator + SCHEMA_ONLY_BASE_NAME + snapshotVersion.get() + DOT_XML
 			);
 		}
 		return Optional.empty();
@@ -113,7 +115,7 @@ public class ChangeLogVersionFinder {
 		Optional<String> snapshotVersion = getLatestSnapshotVersion();
 		if ( snapshotVersion.isPresent() ) {
 			return Optional.of(
-				SNAPSHOTS_FOLDER_NAME + File.separator + snapshotVersion.get() + File.separator + SNAPSHOTS_CORE_DATA_FILENAME
+				CORE_DATA_FOLDER_NAME + File.separator + CORE_DATA_BASE_NAME  + snapshotVersion.get() + DOT_XML
 			);
 		}
 		return Optional.empty();
@@ -150,7 +152,7 @@ public class ChangeLogVersionFinder {
 	public List<String> getUpdateFileNames( List<String> versions ) {
 		return versions
 			.stream()
-			.map( version -> UPDATES_FOLDER_NAME + File.separator + version + File.separator + UPDATES_FILENAME )
+			.map( version -> UPDATES_FOLDER_NAME + File.separator + UPDATE_TO_LATEST_BASE_NAME + version + DOT_XML )
 			.collect( Collectors.toList());
 	}
 
