@@ -9,6 +9,7 @@
  */
 package org.openmrs.liquibase;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,16 +28,14 @@ import static org.junit.Assert.assertEquals;
 public class ChangeLogVersionsTest {
 	private static final org.slf4j.Logger log = LoggerFactory.getLogger( ChangeLogVersionFinderTest.class);
 
-	// TODO TRUNK-4830 base names are redundant with definition in ChangeLogVersionFinder
-	//
-	private static final String CORE_DATA_BASE_NAME = "liquibase-core-data-";
-	private static final String CORE_DATA_PATTERN = "classpath:org/openmrs/liquibase/snapshots/core-data/*";
+	private static final String CORE_DATA_BASE_NAME = ChangeLogVersionFinder.CORE_DATA_BASE_NAME;
+	private static final String CORE_DATA_PATTERN = "classpath:" + ChangeLogVersionFinder.CORE_DATA_FOLDER_NAME + File.separator + "*";
 
-	private static final String SCHEMA_ONLY_BASE_NAME = "liquibase-schema-only-";
-	private static final String SCHEMA_ONLY_PATTERN = "classpath:org/openmrs/liquibase/snapshots/schema-only/*";
+	private static final String SCHEMA_ONLY_BASE_NAME = ChangeLogVersionFinder.SCHEMA_ONLY_BASE_NAME;
+	private static final String SCHEMA_ONLY_PATTERN = "classpath:" + ChangeLogVersionFinder.SCHEMA_ONLY_FOLDER_NAME + File.separator + "*";
 	
-	private static final String UPDATE_TO_LATEST_BASE_NAME = "liquibase-update-to-latest-";
-	private static final String UPDATE_TO_LATEST_PATTERN = "classpath:org/openmrs/liquibase/updates/*";
+	private static final String UPDATE_TO_LATEST_BASE_NAME = ChangeLogVersionFinder.UPDATE_TO_LATEST_BASE_NAME;
+	private static final String UPDATE_TO_LATEST_PATTERN = "classpath:" + ChangeLogVersionFinder.UPDATES_FOLDER_NAME + File.separator + "*";
 
 	private ChangeLogVersions changeLogVersions;
 	

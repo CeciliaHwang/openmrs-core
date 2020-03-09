@@ -17,28 +17,8 @@ import java.util.List;
  * 
  * The information provided by this class needs to be updated when new Liquibase snapshots and updates
  * are added to openmrs-api resources.
- * 
- * TODO TRUNK-4830 add reference to this class to openmrs-liquibase/README.md
- * 
  */
 public class ChangeLogVersions {
-
-	/*
-	 * TODO TRUNK-4830 refactor folder and file structure for snapshot and update change log files
-	 *  
-	 * DONE - move all files to the resources directory and give up the idea of having subfolders per version ?
-	 * DONE - make version number part of the filename (as opposed to having folders named after the version and using the 
-	 *   same file names within these folders)
-	 * 
-	 * - why use the same logical file path for all update files? That made sense for early ones but could be stopped.
-	 *   Easiest to continue.
-	 * 
-	 * - are ids of change sets unique across change log files? extract all ids and check for uniqueness
-	 * - would using the same logical file path for all versions would make life easier? No it would not, it is essential 
-	 *   to prevent that an earlier versions of snapshot and updates are ever run on top of a later snapshot. Is there a 
-	 *   Liquibase way of ensuring that? Consider preconditions at change log level
-	 * 
-	 */
 	/**
 	 * This definition of Liquibase snapshot versions needs to be kept in sync with the actual change log files
 	 * in openmrs-core/api/src/main/resources/liquibase/snapshots/core-data 

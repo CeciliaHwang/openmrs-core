@@ -26,13 +26,14 @@ import org.openmrs.module.VersionComparator;
  */
 public class ChangeLogVersionFinder {
 
-	private static final String CORE_DATA_FOLDER_NAME = "org/openmrs/liquibase/snapshots/core-data";
-	private static final String SCHEMA_ONLY_FOLDER_NAME = "org/openmrs/liquibase/snapshots/schema-only";
-	private static final String UPDATES_FOLDER_NAME = "org/openmrs/liquibase/updates";
+	static final String BASE_FOLDER_NAME = "org" + File.separator + "openmrs" + File.separator + "liquibase";
+	static final String CORE_DATA_FOLDER_NAME = BASE_FOLDER_NAME + File.separator + "snapshots" + File.separator + "core-data";
+	static final String SCHEMA_ONLY_FOLDER_NAME = BASE_FOLDER_NAME + File.separator + "snapshots" + File.separator + "schema-only";
+	static final String UPDATES_FOLDER_NAME = BASE_FOLDER_NAME + File.separator + "updates";
 	
-	private static final String CORE_DATA_BASE_NAME = "liquibase-core-data-";
-	private static final String SCHEMA_ONLY_BASE_NAME = "liquibase-schema-only-";
-	private static final String UPDATE_TO_LATEST_BASE_NAME = "liquibase-update-to-latest-";
+	static final String CORE_DATA_BASE_NAME = "liquibase-core-data-";
+	static final String SCHEMA_ONLY_BASE_NAME = "liquibase-schema-only-";
+	static final String UPDATE_TO_LATEST_BASE_NAME = "liquibase-update-to-latest-";
 
 	private static final String DOT_XML = ".xml";
 	private static final String LOWER_CASE_X = "x";
