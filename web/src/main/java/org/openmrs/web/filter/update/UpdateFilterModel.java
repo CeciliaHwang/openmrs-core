@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+// TODO TRUNK-4830 understand how the UpdateFilter and the UpdateFilterModel interact.
+//
 /**
  * The {@link UpdateFilter} uses this model object to hold all properties that are edited by the
  * user in the wizard. All attributes on this model object are added to all templates rendered by
@@ -72,8 +74,6 @@ public class UpdateFilterModel {
 		Logger log = LoggerFactory.getLogger(getClass());
 		
 		try {
-			// TODO TRUNK-4830 understand where this is actually used
-			//
 			changes = DatabaseUpdater.getUnrunDatabaseChanges( liquibaseProvider );
 			
 			// not sure why this is necessary...

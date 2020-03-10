@@ -1034,10 +1034,10 @@ public class InitializationFilter extends StartupFilter {
 	}
 	
 	/**
-	 * @see org.openmrs.web.filter.StartupFilter#getModel()
+	 * @see org.openmrs.web.filter.StartupFilter#getUpdateFilterModel()
 	 */
 	@Override
-	protected Object getModel() {
+	protected Object getUpdateFilterModel() {
 		return wizardModel;
 	}
 	

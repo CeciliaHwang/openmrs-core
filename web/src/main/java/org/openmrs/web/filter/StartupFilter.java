@@ -239,7 +239,7 @@ public abstract class StartupFilter implements Filter {
 			velocityContext.put(entry.getKey(), entry.getValue());
 		}
 		
-		Object model = getModel();
+		Object model = getUpdateFilterModel();
 		
 		// put each of the private varibles into the template for convenience
 		for (Field field : model.getClass().getDeclaredFields()) {
@@ -305,7 +305,7 @@ public abstract class StartupFilter implements Filter {
 	 *
 	 * @return the stored formbacking/model object
 	 */
-	protected abstract Object getModel();
+	protected abstract Object getUpdateFilterModel();
 	
 	/**
 	 * If this returns true, this filter fails early and quickly. All logic is skipped and startup

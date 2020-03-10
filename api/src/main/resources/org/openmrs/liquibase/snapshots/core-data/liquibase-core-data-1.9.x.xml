@@ -11,7 +11,7 @@
     
 -->
 <!--
-	TODO TRUNK-4830 - preconditions and logical file path
+	TODO TRUNK-4830 - add preconditions and consider logical file path
 	
 	- introduce preconditions that prevent earlier snapshots from being executed after later ones
 	- which logicalFilePath to use for snapshots?

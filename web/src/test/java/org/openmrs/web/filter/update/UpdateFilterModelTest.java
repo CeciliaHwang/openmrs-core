@@ -30,6 +30,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
+// TODO TRUNK-4830 uncomment and update tests
+//
 /**
  * Tests {@link UpdateFilterModel}.
  */
@@ -43,8 +45,6 @@ public class UpdateFilterModelTest {
 	public void setUp() {
 		PowerMockito.mockStatic(DatabaseUpdater.class);
 	}
-	
-	// TODO TRUNK-4830 uncomment and update tests
 	
 	@Test
 	public void createUpdateFilterModel_shouldrequireAnUpdateAndSetChangesToUnrunDatabaseChangesIfChangesAreNonEmpty()

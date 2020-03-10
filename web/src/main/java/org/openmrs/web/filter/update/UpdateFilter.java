@@ -80,7 +80,7 @@ public class UpdateFilter extends StartupFilter {
 	/**
 	 * The model object behind this set of screens
 	 */
-	private UpdateFilterModel model = null;
+	private UpdateFilterModel updateFilterModel = null;
 	
 	/**
 	 * Variable set as soon as the update is done or verified to not be needed so that future calls
@@ -187,7 +187,7 @@ public class UpdateFilter extends StartupFilter {
 						// do nothing
 					}
 					// if lock was released successfully we need to get unrun changes
-					model.updateChanges();
+					updateFilterModel.updateChanges();
 				}
 				
 				// need to configure velocity tool box for using user's preferred locale
@@ -507,7 +507,7 @@ public class UpdateFilter extends StartupFilter {
 		log.debug("Initializing the UpdateFilter");
 		
 		if (!InitializationFilter.initializationRequired() || (Listener.isSetupNeeded() && Listener.runtimePropertiesFound())) {
-			model = new UpdateFilterModel();
+			updateFilterModel = new UpdateFilterModel();
 			/*
 			 * In this case, Listener#runtimePropertiesFound == true and InitializationFilter Wizard is skipped,
 			 * so no need to reset Context's RuntimeProperties again, because of Listener.contextInitialized has set it.
@@ -515,16 +515,16 @@ public class UpdateFilter extends StartupFilter {
 			try {
 				// this pings the DatabaseUpdater.updatesRequired which also
 				// considers a db lock to be a 'required update'
-				if (model.updateRequired) {
+				if ( updateFilterModel.updateRequired) {
 					setUpdatesRequired(true);
-				} else if (model.changes == null) {
+				} else if ( updateFilterModel.changes == null) {
 					setUpdatesRequired(false);
 				} else {
 					if (log.isDebugEnabled()) {
-						log.debug("Setting updates required to " + (!model.changes.isEmpty())
+						log.debug("Setting updates required to " + (!updateFilterModel.changes.isEmpty())
 						        + " because of the size of unrun changes");
 					}
-					setUpdatesRequired(!model.changes.isEmpty());
+					setUpdatesRequired(!updateFilterModel.changes.isEmpty());
 				}
 			}
 			catch (Exception e) {
@@ -542,12 +542,12 @@ public class UpdateFilter extends StartupFilter {
 	}
 	
 	/**
-	 * @see org.openmrs.web.filter.StartupFilter#getModel()
+	 * @see org.openmrs.web.filter.StartupFilter#getUpdateFilterModel()
 	 */
 	@Override
-	protected Object getModel() {
+	protected Object getUpdateFilterModel() {
 		// this object was initialized in the #init(FilterConfig) method
-		return model;
+		return updateFilterModel;
 	}
 	
 	/**
@@ -764,7 +764,7 @@ public class UpdateFilter extends StartupFilter {
 						catch (InputRequiredException inputRequired) {
 							// the user would be stepped through the questions returned here.
 							log.error("Not implemented", inputRequired);
-							model.updateChanges();
+							updateFilterModel.updateChanges();
 							reportError(ErrorMessageConstants.UPDATE_ERROR_INPUT_NOT_IMPLEMENTED, inputRequired.getMessage());
 							return;
 						}
@@ -775,7 +775,7 @@ public class UpdateFilter extends StartupFilter {
 							for (String errorMessage : Arrays.asList(e.getMessage().split("\n"))) {
 								databaseUpdateErrors.put(errorMessage, null);
 							}
-							model.updateChanges();
+							updateFilterModel.updateChanges();
 							reportErrors(databaseUpdateErrors);
 							return;
 						}
